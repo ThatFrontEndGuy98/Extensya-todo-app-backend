@@ -1,116 +1,75 @@
-# Laravel Todo Application with Real-Time Notifications
+# Laravel Todo Application Backend API
 
-A comprehensive Laravel-based Todo application featuring real-time notifications, advanced caching, and a complete REST API. The application includes both admin and user interfaces with Vue.js frontend.
+A robust Laravel-based backend API for a Todo application featuring real-time notifications, advanced caching, and complete task management system.
 
 ## Features
 
-- 🔐 User Authentication & Authorization
-- 📝 Task Management (CRUD operations)
-- 🔔 Real-time Notifications using Laravel Echo and Pusher
-- 💾 Advanced Caching with Redis
-- 🎯 REST API
-- 👑 Admin Dashboard
-- 🎨 Vue.js Frontend with Tailwind CSS
+- 🔐 Authentication & Authorization
+  - JWT/Sanctum Authentication
+  - Role-based Access Control (Admin/User)
+  - Protected API Routes
 
-## Technical Stack
+- 📝 Task Management
+  - CRUD Operations
+  - Task Status Updates
+  - Priority Management
+  - Due Date Handling
 
-### Backend
-- Laravel 10.x
-- PHP 8.1+
-- MySQL/PostgreSQL
-- Redis (for caching)
-- Pusher (for real-time notifications)
+- 🔔 Notifications System
+  - Real-time Admin Notifications
+  - User Notifications
+  - Notification Status Management
 
-### Frontend
-- Vue.js 3
-- Tailwind CSS
-- Axios for API calls
+- 💾 Data Management
+  - Redis Caching
+  - Database Optimization
+  - Efficient Query Handling
 
-## Prerequisites
-
-- PHP >= 8.1
-- Composer
-- Node.js & NPM
-- MySQL/PostgreSQL
-- Redis Server
-- Pusher Account
-
-## Installation
-
-1. Clone the repository
-```bash
-git clone <repository-url>
-cd <project-folder>
-```
-
-2. Install PHP dependencies
-```bash
-composer install
-```
-
-3. Install Node.js dependencies
-```bash
-npm install
-```
-
-4. Set up environment variables
-```bash
-cp .env.example .env
-# Configure your database, Redis, and Pusher credentials in .env
-```
-
-5. Generate application key
-```bash
-php artisan key:generate
-```
-
-6. Run migrations
-```bash
-php artisan migrate
-```
-
-7. Build frontend assets
-```bash
-npm run build
-```
-
-## Development Setup
-
-1. Start Laravel development server
-```bash
-php artisan serve
-```
-
-2. Watch for frontend changes
-```bash
-npm run dev
-```
-
-## API Routes
+## API Endpoints
 
 ### Authentication
-- POST `/api/v1/register` - Register new user
-- POST `/api/v1/login` - User login
-- POST `/api/v1/logout` - User logout
+```
+POST /api/v1/register
+POST /api/v1/login
+POST /api/v1/logout
+```
 
-### Tasks
-- GET `/api/v1/tasks` - List user's tasks
-- POST `/api/v1/tasks` - Create new task
-- GET `/api/v1/tasks/{id}` - Get task details
-- PUT `/api/v1/tasks/{id}` - Update task
-- DELETE `/api/v1/tasks/{id}` - Delete task
-- PATCH `/api/v1/tasks/{id}/status` - Toggle task status
+### User Tasks
+```
+GET    /api/v1/tasks
+POST   /api/v1/tasks
+GET    /api/v1/tasks/{id}
+PUT    /api/v1/tasks/{id}
+DELETE /api/v1/tasks/{id}
+PATCH  /api/v1/tasks/{id}/status
+```
 
 ### Admin Routes
-- GET `/api/v1/admin/tasks` - List all tasks
-- GET `/api/v1/admin/users` - List all users
-- POST `/api/v1/admin/notifications` - Send admin notifications
+```
+GET    /api/v1/admin/tasks
+POST   /api/v1/admin/tasks
+GET    /api/v1/admin/tasks/{id}
+PUT    /api/v1/admin/tasks/{id}
+DELETE /api/v1/admin/tasks/{id}
+GET    /api/v1/admin/tasks/by-user/{user}
+```
+
+### Notifications
+```
+POST   /api/v1/admin/notifications
+GET    /api/v1/notifications
+GET    /api/v1/notifications/unread-count
+PATCH  /api/v1/notifications/{notification}/mark-as-read
+DELETE /api/v1/notifications/{notification}
+```
 
 ## Project Structure
-
-### Backend
 ```
 app/
+├── Events/
+│   ├── TaskCreated.php
+│   ├── TaskDeleted.php
+│   └── TaskUpdated.php
 ├── Http/
 │   ├── Controllers/
 │   │   ├── API/V1/
@@ -118,30 +77,117 @@ app/
 │   │   │   ├── TaskController.php
 │   │   │   └── AdminNotificationController.php
 │   ├── Middleware/
+│   │   ├── AdminMiddleware.php
+│   │   └── ApiAuthentication.php
 │   ├── Requests/
+│   │   ├── DeleteTaskRequest.php
+│   │   ├── ListTaskRequest.php
+│   │   ├── LoginRequest.php
+│   │   ├── RegisterRequest.php
+│   │   ├── StoreTaskRequest.php
+│   │   └── UpdateTaskRequest.php
 │   └── Resources/
+│       ├── NotificationResource.php
+│       ├── TaskResource.php
+│       └── UserResource.php
 ├── Models/
-├── Events/
+│   ├── Notification.php
+│   ├── Task.php
+│   └── User.php
 └── Listeners/
+    └── SendTaskNotification.php
 ```
 
-### Frontend
+## Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/ThatFrontEndGuy98/Extensya-todo-app-backend.git
+cd Extensya-todo-app-backend
 ```
-src/
-├── components/
-├── views/
-├── router/
-└── store/
+
+2. Install dependencies
+```bash
+composer install
 ```
+
+3. Configure environment
+```bash
+cp .env.example .env
+# Update database and other configurations in .env
+```
+
+4. Generate application key
+```bash
+php artisan key:generate
+```
+
+5. Run migrations
+```bash
+php artisan migrate
+```
+
+6. Start the server
+```bash
+php artisan serve
+```
+
+## Environment Variables
+
+Make sure to set these in your .env file:
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+
+CACHE_DRIVER=redis
+QUEUE_CONNECTION=redis
+SESSION_DRIVER=redis
+
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+```
+
+## Development
+
+To run the development server:
+```bash
+php artisan serve
+```
+
+For database changes:
+```bash
+php artisan migrate:fresh --seed
+```
+
+## Testing API Endpoints
+
+You can test the API endpoints using Postman or any API testing tool. Make sure to:
+1. Include the Authorization header with your Bearer token
+2. Set Content-Type to application/json
+3. Use the correct HTTP method for each endpoint
 
 ## Security
 
-The application implements several security measures:
-- Sanctum authentication for API
-- Route middleware for access control
+This application implements:
+- Sanctum authentication
 - CSRF protection
 - XSS prevention
+- SQL injection prevention
+- Rate limiting
 - Input validation
+
+## Requirements
+
+- PHP >= 8.1
+- Laravel 10.x
+- MySQL/PostgreSQL
+- Redis Server
+- Composer
 
 ## Contributing
 
@@ -150,7 +196,3 @@ The application implements several security measures:
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
